@@ -36,21 +36,41 @@ describe("Parser", () => {
 
   it("parses abstractions", () => {
     root = DescribedClass.parse([λ, x, DOT, y]);
-    expectNode(root, 1, "abstraction", "x");
+    expectNode(root, 2, "abstraction", "x");
 
-    let body = root.children[0];
+    let type = root.children[0];
+    expectNode(type, 0, "variable", undefined);
+
+    let body = root.children[1];
     expectNode(body, 0, "variable", "y");
   });
 
   it("parses nested abstractions", () => {
     root = DescribedClass.parse([λ, x, DOT, λ, y, DOT, x]);
-    expectNode(root, 1, "abstraction", "x");
+    expectNode(root, 2, "abstraction", "x");
 
-    let body = root.children[0];
-    expectNode(body, 1, "abstraction", "y");
+    let type = root.children[0];
+    expectNode(type, 0, "variable", undefined);
 
-    let nestedBody = body.children[0];
+    let body = root.children[1];
+    expectNode(body, 2, "abstraction", "y");
+
+    let nestedType = body.children[0];
+    expectNode(nestedType, 0, "variable", undefined);
+
+    let nestedBody = body.children[1];
     expectNode(nestedBody, 0, "variable", "x");
+  });
+
+  it("parses abstractions with types", () => {
+    root = DescribedClass.parse([λ, x, COLON, y, DOT, z]);
+    expectNode(root, 2, "abstraction", "x");
+
+    let type = root.children[0];
+    expectNode(type, 0, "variable", "y");
+
+    let body = root.children[1];
+    expectNode(body, 0, "variable", "z");
   });
 
   it("parses applications", () => {
@@ -206,6 +226,4 @@ describe("Parser", () => {
       message: "12:34: unexpected ')'"
     });
   });
-
-  it("parses types");
 });
