@@ -18,6 +18,7 @@ describe("Parser", () => {
   const x     = token("identifier", "x");
   const y     = token("identifier", "y");
   const z     = token("identifier", "z");
+  const w     = token("identifier", "w");
 
   const expectNode = (node, children, type, value) => {
     expect(node.children.length).toEqual(children);
@@ -69,6 +70,59 @@ describe("Parser", () => {
     expectNode(leftRight, 0, "variable", "y");
   });
 
+  // x (y z)
+  it("parses parentheses", () => {
+    root = DescribedClass.parse([x, LEFT, y, z, RIGHT]);
+    expectNode(root, 2, "application");
+
+    let left = root.children[0];
+    expectNode(left, 0, "variable", "x");
+
+    let right = root.children[1];
+    expectNode(right, 2, "application");
+
+    let rightLeft = right.children[0];
+    expectNode(rightLeft, 0, "variable", "y");
+
+    let rightRight = right.children[1];
+    expectNode(rightRight, 0, "variable", "z");
+  });
+
+  //x (y (z w))
+  it("parses nested parentheses", () => {
+    root = DescribedClass.parse([x, LEFT, y, LEFT, z, w, RIGHT, RIGHT]);
+    expectNode(root, 2, "application");
+
+    let left = root.children[0];
+    expectNode(left, 0, "variable", "x");
+
+    let right = root.children[1];
+    expectNode(right, 2, "application");
+
+    let rightLeft = right.children[0];
+    expectNode(rightLeft, 0, "variable", "y");
+
+    let rightRight = right.children[1];
+    expectNode(rightRight, 2, "application");
+
+    let rightRightLeft = rightRight.children[0];
+    expectNode(rightRightLeft, 0, "variable", "z");
+
+    let rightRightRight = rightRight.children[1];
+    expectNode(rightRightRight, 0, "variable", "w");
+  });
+
+  it("parses arbitrarily nested parentheses", () => {
+    root = DescribedClass.parse([LEFT, LEFT, LEFT, x, RIGHT, RIGHT, RIGHT, y]);
+    expectNode(root, 2, "application");
+
+    let left = root.children[0];
+    expectNode(left, 0, "variable", "x");
+
+    let right = root.children[1];
+    expectNode(right, 0, "variable", "y");
+  });
+
   it("throws an error if given an empty array", () => {
     expect(() => {
       DescribedClass.parse([]);
@@ -114,6 +168,44 @@ describe("Parser", () => {
     });
   });
 
+  it("throws an error if parentheses aren't closed", () => {
+    expect(() => {
+      DescribedClass.parse([LEFT]);
+    }).toThrow({
+      name: "ParseError",
+      message: "12:34: mismatched parentheses"
+    });
+
+    expect(() => {
+      DescribedClass.parse([LEFT, LEFT, x, RIGHT]);
+    }).toThrow({
+      name: "ParseError",
+      message: "12:34: mismatched parentheses"
+    });
+
+    expect(() => {
+      DescribedClass.parse([LEFT, x, RIGHT, LEFT]);
+    }).toThrow({
+      name: "ParseError",
+      message: "12:34: mismatched parentheses"
+    });
+  });
+
+  it("throws an error if parentheses aren't opened", () => {
+    expect(() => {
+      DescribedClass.parse([x, RIGHT]);
+    }).toThrow({
+      name: "ParseError",
+      message: "12:34: unexpected ')'"
+    });
+
+    expect(() => {
+      DescribedClass.parse([LEFT, x, RIGHT, RIGHT]);
+    }).toThrow({
+      name: "ParseError",
+      message: "12:34: unexpected ')'"
+    });
+  });
+
   it("parses types");
-  it("parses parentheses");
 });
