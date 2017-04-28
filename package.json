@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jasmine": "^2.6.0",
+    "jshint": "^2.9.4"
+  }
+}
