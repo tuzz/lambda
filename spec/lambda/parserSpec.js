@@ -193,21 +193,21 @@ describe("Parser", () => {
       DescribedClass.parse([LEFT]);
     }).toThrow({
       name: "ParseError",
-      message: "12:34: mismatched parentheses"
+      message: "unexpected end of input"
     });
 
     expect(() => {
       DescribedClass.parse([LEFT, LEFT, x, RIGHT]);
     }).toThrow({
       name: "ParseError",
-      message: "12:34: mismatched parentheses"
+      message: "unexpected end of input"
     });
 
     expect(() => {
       DescribedClass.parse([LEFT, x, RIGHT, LEFT]);
     }).toThrow({
       name: "ParseError",
-      message: "12:34: mismatched parentheses"
+      message: "unexpected end of input"
     });
   });
 
