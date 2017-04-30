@@ -155,6 +155,12 @@ describe("Parser", () => {
     expectNode(right, 0, "variable", "y");
   });
 
+  it("does not mutate its input", () => {
+    let tokens = [x];
+    DescribedClass.parse(tokens);
+    expect(tokens).toEqual([x]);
+  });
+
   it("throws an error if given an empty array", () => {
     expect(() => {
       DescribedClass.parse([]);
