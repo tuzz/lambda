@@ -40,7 +40,7 @@ describe("Parser", () => {
     expectNode(root, 2, "abstraction", undefined);
 
     let type = root.children[0];
-    expectNode(type, 0, "variable", undefined);
+    expectNode(type, 0, "type", undefined);
 
     let body = root.children[1];
     expectNode(body, 0, "variable", "0");
@@ -51,7 +51,7 @@ describe("Parser", () => {
     expectNode(root, 2, "abstraction", "x");
 
     let type = root.children[0];
-    expectNode(type, 0, "variable", undefined);
+    expectNode(type, 0, "type", undefined);
 
     let body = root.children[1];
     expectNode(body, 0, "variable", "x");
@@ -62,7 +62,7 @@ describe("Parser", () => {
     expectNode(root, 2, "abstraction", undefined);
 
     let type = root.children[0];
-    expectNode(type, 0, "variable", "x");
+    expectNode(type, 0, "type", "x");
 
     let body = root.children[1];
     expectNode(body, 0, "variable", "0");
@@ -73,13 +73,13 @@ describe("Parser", () => {
     expectNode(root, 2, "abstraction", undefined);
 
     let type = root.children[0];
-    expectNode(type, 0, "variable", undefined);
+    expectNode(type, 0, "type", undefined);
 
     let body = root.children[1];
     expectNode(body, 2, "abstraction", undefined);
 
     let nestedType = body.children[0];
-    expectNode(nestedType, 0, "variable", undefined);
+    expectNode(nestedType, 0, "type", undefined);
 
     let nestedBody = body.children[1];
     expectNode(nestedBody, 0, "variable", "0");
