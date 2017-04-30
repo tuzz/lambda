@@ -19,6 +19,7 @@ describe("Parser", () => {
   const y     = token("identifier", "y");
   const z     = token("identifier", "z");
   const w     = token("identifier", "w");
+  const zero  = token("identifier", "0");
 
   const expectNode = (node, children, type, value) => {
     expect(node.children.length).toEqual(children);
@@ -35,42 +36,53 @@ describe("Parser", () => {
   });
 
   it("parses abstractions", () => {
-    root = DescribedClass.parse([λ, x, DOT, y]);
+    root = DescribedClass.parse([λ, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 0, "variable", undefined);
+
+    let body = root.children[1];
+    expectNode(body, 0, "variable", "0");
+  });
+
+  it("parses abstractions with parameters", () => {
+    root = DescribedClass.parse([λ, x, DOT, x]);
     expectNode(root, 2, "abstraction", "x");
 
     let type = root.children[0];
     expectNode(type, 0, "variable", undefined);
 
     let body = root.children[1];
-    expectNode(body, 0, "variable", "y");
+    expectNode(body, 0, "variable", "x");
+  });
+
+  it("parses abstractions with types", () => {
+    root = DescribedClass.parse([λ, COLON, x, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 0, "variable", "x");
+
+    let body = root.children[1];
+    expectNode(body, 0, "variable", "0");
   });
 
   it("parses nested abstractions", () => {
-    root = DescribedClass.parse([λ, x, DOT, λ, y, DOT, x]);
-    expectNode(root, 2, "abstraction", "x");
+    root = DescribedClass.parse([λ, DOT, λ, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
 
     let type = root.children[0];
     expectNode(type, 0, "variable", undefined);
 
     let body = root.children[1];
-    expectNode(body, 2, "abstraction", "y");
+    expectNode(body, 2, "abstraction", undefined);
 
     let nestedType = body.children[0];
     expectNode(nestedType, 0, "variable", undefined);
 
     let nestedBody = body.children[1];
-    expectNode(nestedBody, 0, "variable", "x");
-  });
-
-  it("parses abstractions with types", () => {
-    root = DescribedClass.parse([λ, x, COLON, y, DOT, z]);
-    expectNode(root, 2, "abstraction", "x");
-
-    let type = root.children[0];
-    expectNode(type, 0, "variable", "y");
-
-    let body = root.children[1];
-    expectNode(body, 0, "variable", "z");
+    expectNode(nestedBody, 0, "variable", "0");
   });
 
   it("parses applications", () => {
@@ -167,15 +179,6 @@ describe("Parser", () => {
     }).toThrow({
       name: "ParseError",
       message: "12:34: unexpected '.'"
-    });
-  });
-
-  it("throws an error if an abstraction's param is invalid", () => {
-    expect(() => {
-      DescribedClass.parse([λ, λ]);
-    }).toThrow({
-      name: "ParseError",
-      message: "12:34: expected identifier but got 'λ'"
     });
   });
 
