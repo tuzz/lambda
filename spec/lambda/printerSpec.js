@@ -80,4 +80,18 @@ describe("Printer", () => {
     result = DescribedClass.print(ast("x"));
     expect(result).toEqual("x");
   });
+
+  it("can handle nameless terms", () => {
+    result = DescribedClass.print(ast("(λx. x) x"), { names: false });
+    expect(result).toEqual("(λ. 0) 0");
+
+    result = DescribedClass.print(ast("(λx. x) λy. w y z"), { names: false });
+    expect(result).toEqual("(λ. 0) λ. 1 0 2");
+
+    result = DescribedClass.print(ast("(λ. 0) λ. 1 0 2"), { names: false });
+    expect(result).toEqual("(λ. 0) λ. 1 0 2");
+
+    result = DescribedClass.print(ast("(λ. 0) λ:T. 1 0 2"));
+    expect(result).toEqual("(λx. x) λx:T. 1 x 2");
+  });
 });
