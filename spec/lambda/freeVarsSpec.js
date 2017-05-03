@@ -15,7 +15,7 @@ describe("FreeVars", () => {
     );
 
   it("adds a list of free variables to each abstraction", () => {
-    let lambdaX = DescribedClass.annotate(ast("λx. y λy. y z"));
+    let lambdaX = DescribedClass.annotate(ast("λx. y λy. x y z"));
     expect(lambdaX.freeVars.length).toEqual(2);
 
     let y = lambdaX.freeVars[0];
@@ -29,9 +29,13 @@ describe("FreeVars", () => {
     let apply = lambdaX.children[1];
     let lambdaY = apply.children[1];
 
-    expect(lambdaY.freeVars.length).toEqual(1);
+    expect(lambdaY.freeVars.length).toEqual(2);
 
-    z = lambdaY.freeVars[0];
+    let x = lambdaY.freeVars[0];
+    expect(x.type).toEqual("variable");
+    expect(x.value).toEqual("x");
+
+    z = lambdaY.freeVars[1];
     expect(z.type).toEqual("variable");
     expect(z.value).toEqual("z");
   });
