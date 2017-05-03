@@ -15,8 +15,10 @@ node_2[label="T",shape="diamond",color="#CACAFF",style="filled"];
 node_1 -> node_2[dir="none"];
 node_3[label="apply",shape="oval",color="#FFFF99",style="filled"];
 node_4[label="x",shape="circle",color="#CCCCCC",style="filled"];
+node_4 -> node_1[constraint="false",style="dashed",color="#AAAAAA"];
 node_3 -> node_4[dir="none"];
 node_5[label="y",shape="circle",color="#CCCCCC",style="filled"];
+node_5 -> node_0[constraint="false",style="dashed",color="#AAAAAA"];
 node_3 -> node_5[dir="none"];
 node_1 -> node_3[dir="none"];
 }

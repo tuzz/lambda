@@ -22,10 +22,16 @@ describe("Grapher", () => {
     )
   );
 
-  const fixture = fs.readFileSync("spec/support/graph.dot", "utf8");
+  const fixture1 = fs.readFileSync("spec/support/graph.dot", "utf8");
+  const fixture2 = fs.readFileSync("spec/support/binders.dot", "utf8");
 
   it("returns a dot graph for the tree", () => {
     result = DescribedClass.graph(ast("λx:T. x y"));
-    expect(result).toEqual(fixture);
+    expect(result).toEqual(fixture1);
+  });
+
+  it("can optionally build with arrows to binders", () => {
+    result = DescribedClass.graph(ast("λx:T. x y"), { binders: true });
+    expect(result).toEqual(fixture2);
   });
 });
