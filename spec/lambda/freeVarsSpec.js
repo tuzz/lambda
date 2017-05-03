@@ -4,11 +4,11 @@ const DescribedClass = lib("lambda/freeVars");
 
 const Lexer = lib("lambda/lexer");
 const Parser = lib("lambda/parser");
-const DeBrujin = lib("lambda/deBrujin");
+const DeBruijn = lib("lambda/deBruijn");
 
 describe("FreeVars", () => {
   const ast = term =>
-    DeBrujin.canonicalise(
+    DeBruijn.canonicalise(
       Parser.parse(
         Lexer.lex(term)
       )

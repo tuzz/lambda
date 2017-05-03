@@ -4,7 +4,7 @@ const DescribedClass = lib("lambda/nameAlloc");
 
 const Lexer = lib("lambda/lexer");
 const Parser = lib("lambda/parser");
-const DeBrujin = lib("lambda/deBrujin");
+const DeBruijn = lib("lambda/deBruijn");
 const FreeVars = lib("lambda/freeVars");
 
 describe("NameAlloc", () => {
@@ -12,7 +12,7 @@ describe("NameAlloc", () => {
 
   beforeEach(() => {
     ast = FreeVars.annotate(
-      DeBrujin.canonicalise(
+      DeBruijn.canonicalise(
         Parser.parse(
           Lexer.lex("λx. y λy. λy. y")
         )

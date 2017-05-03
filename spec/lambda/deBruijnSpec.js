@@ -3,9 +3,9 @@
 const Lexer = lib("lambda/lexer");
 const Parser = lib("lambda/parser");
 
-const DescribedClass = lib("lambda/deBrujin");
+const DescribedClass = lib("lambda/deBruijn");
 
-describe("de Brujin", () => {
+describe("de Bruijn", () => {
   const ast = term => Parser.parse(Lexer.lex(term));
 
   it("sets the binder and index of a variable", () => {
@@ -117,7 +117,7 @@ describe("de Brujin", () => {
     expect(x2.index).toEqual(0);
   });
 
-  it("binds variables that are already de Brujin formatted", () => {
+  it("binds variables that are already de Bruijn formatted", () => {
     let lambda1 = DescribedClass.canonicalise(ast("λ. 0 λ. 1 0"));
     let apply1 = lambda1.children[1];
     let zero1 = apply1.children[0];
@@ -137,7 +137,7 @@ describe("de Brujin", () => {
     expect(zero2.index).toEqual(0);
   });
 
-  it("binds free variables in de Brujin formatted terms", () => {
+  it("binds free variables in de Bruijn formatted terms", () => {
     let root = DescribedClass.canonicalise(ast("λ. 1"));
 
     let binder = root.namingContext[0];
@@ -149,7 +149,7 @@ describe("de Brujin", () => {
     expect(one.index).toEqual(1);
   });
 
-  it("binds to abstraction params before testing de Brujin indices", () => {
+  it("binds to abstraction params before testing de Bruijn indices", () => {
     let lambda1 = DescribedClass.canonicalise(ast("λ0. λ. 0"));
     let lambda2 = lambda1.children[1];
     let zero = lambda2.children[1];
@@ -158,7 +158,7 @@ describe("de Brujin", () => {
     expect(zero.index).toEqual(1);
   });
 
-  it("binds to de Brujin indices before testing free variables", () => {
+  it("binds to de Bruijn indices before testing free variables", () => {
     let lambda1 = DescribedClass.canonicalise(ast("λ. 1 λ. 1"));
     let binder = lambda1.namingContext[0];
 
@@ -175,7 +175,7 @@ describe("de Brujin", () => {
     expect(one2.index).toEqual(1);
   });
 
-  it("does not look up free variables by de Brujin indices", () => {
+  it("does not look up free variables by de Bruijn indices", () => {
     let lambda = DescribedClass.canonicalise(ast("λ. x y 1"));
     let apply1 = lambda.children[1];
     let apply2 = apply1.children[0];

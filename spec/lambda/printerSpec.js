@@ -2,7 +2,7 @@
 
 const Lexer = lib("lambda/lexer");
 const Parser = lib("lambda/parser");
-const DeBrujin = lib("lambda/deBrujin");
+const DeBruijn = lib("lambda/deBruijn");
 const FreeVars = lib("lambda/freeVars");
 const NameAlloc = lib("lambda/nameAlloc");
 
@@ -13,7 +13,7 @@ describe("Printer", () => {
 
   const ast = term => NameAlloc.allocate(
     FreeVars.annotate(
-      DeBrujin.canonicalise(
+      DeBruijn.canonicalise(
         Parser.parse(
           Lexer.lex(term)
         )
