@@ -8,12 +8,13 @@ const DescribedClass = lib("lambda/deBrujin");
 describe("de Brujin", () => {
   const ast = term => Parser.parse(Lexer.lex(term));
 
-  it("sets the binder of a variable", () => {
+  it("sets the binder and index of a variable", () => {
     let lambdaX = DescribedClass.canonicalise(ast("λx. x"));
     expect(lambdaX.binder).toBeUndefined();
 
     let x = lambdaX.children[1];
     expect(x.binder).toEqual(lambdaX);
+    expect(x.index).toEqual(0);
   });
 
   it("sets the binders of nested variables", () => {
@@ -26,6 +27,7 @@ describe("de Brujin", () => {
     let x1 = apply1.children[0];
     expect(x1.type).toEqual("variable");
     expect(x1.binder).toEqual(lambdaX);
+    expect(x1.index).toEqual(0);
 
     let lambdaY = apply1.children[1];
     expect(lambdaY.type).toEqual("abstraction");
@@ -38,10 +40,12 @@ describe("de Brujin", () => {
     let y = apply2.children[0];
     expect(y.type).toEqual("variable");
     expect(y.binder).toEqual(lambdaY);
+    expect(y.index).toEqual(0);
 
     let x2 = apply2.children[1];
     expect(x2.type).toEqual("variable");
     expect(x2.binder).toEqual(lambdaX);
+    expect(x2.index).toEqual(1);
   });
 
   it("binds nested variables to their nearest name-matched ancestor", () => {
@@ -57,8 +61,13 @@ describe("de Brujin", () => {
     let x3 = lambdaX3.children[1];
 
     expect(x1.binder).toEqual(lambdaX1);
+    expect(x1.index).toEqual(0);
+
     expect(x2.binder).toEqual(lambdaX2);
+    expect(x2.index).toEqual(0);
+
     expect(x3.binder).toEqual(lambdaX3);
+    expect(x3.index).toEqual(0);
   });
 
   it("binds free variables to the naming context on the root node", () => {
@@ -71,6 +80,8 @@ describe("de Brujin", () => {
 
     let y = root.children[1];
     expect(y.binder).toEqual(binder);
+    expect(y.index).toEqual(1);
+
     expect(binder.token).toEqual(y.token);
   });
 
@@ -83,9 +94,11 @@ describe("de Brujin", () => {
 
     let y1 = apply.children[0];
     expect(y1.binder).toEqual(binder);
+    expect(y1.index).toEqual(1);
 
     let y2 = apply.children[1];
     expect(y2.binder).toEqual(binder);
+    expect(y2.index).toEqual(1);
   });
 
   it("binds free variables independently of nested abstractions", () => {
@@ -94,12 +107,14 @@ describe("de Brujin", () => {
 
     let x1 = apply.children[0];
     expect(x1.binder).toEqual(binder);
+    expect(x1.index).toEqual(0);
 
     let lambdaX = apply.children[1];
     expect(lambdaX.type).toEqual("abstraction");
 
     let x2 = lambdaX.children[1];
     expect(x2.binder).toEqual(lambdaX);
+    expect(x2.index).toEqual(0);
   });
 
   it("binds variables that are already de Brujin formatted", () => {
@@ -113,8 +128,13 @@ describe("de Brujin", () => {
     let zero2 = apply2.children[1];
 
     expect(zero1.binder).toEqual(lambda1);
+    expect(zero1.index).toEqual(0);
+
     expect(one.binder).toEqual(lambda1);
+    expect(one.index).toEqual(1);
+
     expect(zero2.binder).toEqual(lambda2);
+    expect(zero2.index).toEqual(0);
   });
 
   it("binds free variables in de Brujin formatted terms", () => {
@@ -126,6 +146,7 @@ describe("de Brujin", () => {
 
     let one = root.children[1];
     expect(one.binder).toEqual(binder);
+    expect(one.index).toEqual(1);
   });
 
   it("binds to abstraction params before testing de Brujin indices", () => {
@@ -134,6 +155,7 @@ describe("de Brujin", () => {
     let zero = lambda2.children[1];
 
     expect(zero.binder).toEqual(lambda1);
+    expect(zero.index).toEqual(1);
   });
 
   it("binds to de Brujin indices before testing free variables", () => {
@@ -147,7 +169,10 @@ describe("de Brujin", () => {
     let one2 = lambda2.children[1];
 
     expect(one1.binder).toEqual(binder);
+    expect(one1.index).toEqual(1);
+
     expect(one2.binder).toEqual(lambda1);
+    expect(one2.index).toEqual(1);
   });
 
   it("does not look up free variables by de Brujin indices", () => {
@@ -163,12 +188,16 @@ describe("de Brujin", () => {
     let one = apply1.children[1];
 
     expect(x.value).toEqual("x");
-    expect(y.value).toEqual("y");
-    expect(one.value).toEqual("1");
-
     expect(x.binder).toEqual(lambda.namingContext[0]);
+    expect(x.index).toEqual(1);
+
+    expect(y.value).toEqual("y");
     expect(y.binder).toEqual(lambda.namingContext[1]);
+    expect(y.index).toEqual(2);
+
+    expect(one.value).toEqual("1");
     expect(one.binder).toEqual(lambda.namingContext[2]);
+    expect(one.index).toEqual(3);
   });
 
   it("does not mutate its input", () => {
@@ -177,5 +206,6 @@ describe("de Brujin", () => {
 
     let body = input.children[1];
     expect(body.binder).toBeUndefined();
+    expect(body.index).toBeUndefined();
   });
 });
