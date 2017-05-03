@@ -2,7 +2,8 @@
   "esversion": 6,
 
   "globals": {
-    "lib": true
+    "lib": true,
+    "fixture": true
   },
 
   // Enforcing options:

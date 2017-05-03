@@ -7,7 +7,6 @@ const FreeVars = lib("lambda/freeVars");
 const NameAlloc = lib("lambda/nameAlloc");
 
 const DescribedClass = lib("lambda/grapher");
-const fs = require("fs");
 
 describe("Grapher", () => {
   let result;
@@ -22,8 +21,9 @@ describe("Grapher", () => {
     )
   );
 
-  const fixture1 = fs.readFileSync("spec/support/graph.dot", "utf8");
-  const fixture2 = fs.readFileSync("spec/support/binders.dot", "utf8");
+  const fixture1 = fixture("graph.dot");
+  const fixture2 = fixture("binders.dot");
+  const fixture3 = fixture("nameless.dot");
 
   it("returns a dot graph for the tree", () => {
     result = DescribedClass.graph(ast("λx:T. x y"));
@@ -33,5 +33,10 @@ describe("Grapher", () => {
   it("can optionally build with arrows to binders", () => {
     result = DescribedClass.graph(ast("λx:T. x y"), { binders: true });
     expect(result).toEqual(fixture2);
+  });
+
+  it("can optionally build without names", () => {
+    result = DescribedClass.graph(ast("λx:T. x y"), { names: false });
+    expect(result).toEqual(fixture3);
   });
 });

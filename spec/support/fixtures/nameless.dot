@@ -1,0 +1,23 @@
+digraph g {
+graph[fontname="helvetica"];
+node[fontname="helvetica"];
+edge[fontname="helvetica"];
+subgraph cluster_free {
+graph[label="&Gamma;"];
+graph[style="dotted"];
+node_0[label="0",shape="square",color="#FFC8F2",style="filled"];
+}
+subgraph cluster_tree {
+graph[label="&lambda;:T. 0 1"];
+graph[style="dotted"];
+node_1[label="&lambda;",shape="box",color="#CAFEB8",style="filled"];
+node_2[label="T",shape="diamond",color="#CACAFF",style="filled"];
+node_1 -> node_2[dir="none"];
+node_3[label="apply",shape="oval",color="#FFFF99",style="filled"];
+node_4[label="0",shape="circle",color="#CCCCCC",style="filled"];
+node_3 -> node_4[dir="none"];
+node_5[label="1",shape="circle",color="#CCCCCC",style="filled"];
+node_3 -> node_5[dir="none"];
+node_1 -> node_3[dir="none"];
+}
+}
