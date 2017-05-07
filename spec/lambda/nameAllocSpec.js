@@ -5,17 +5,14 @@ const DescribedClass = lib("lambda/nameAlloc");
 const Lexer = lib("lambda/lexer");
 const Parser = lib("lambda/parser");
 const DeBruijn = lib("lambda/deBruijn");
-const FreeVars = lib("lambda/freeVars");
 
 describe("NameAlloc", () => {
   let ast;
 
   beforeEach(() => {
-    ast = FreeVars.annotate(
-      DeBruijn.canonicalise(
-        Parser.parse(
-          Lexer.lex("λx. y λy. λy. y")
-        )
+    ast = DeBruijn.canonicalise(
+      Parser.parse(
+        Lexer.lex("λx. y λy. λy. y")
       )
     );
   });
@@ -47,8 +44,7 @@ describe("NameAlloc", () => {
       let lambdaY2 = lambdaY1.children[1];
       let y = lambdaY2.children[1];
 
-      y.binder = lambdaY1;
-      ast = FreeVars.annotate(ast, true);
+      y.index = 1;
 
       apply = ast.children[1];
       lambdaY1 = apply.children[1];
@@ -65,7 +61,6 @@ describe("NameAlloc", () => {
       expect(lambdaY2.name).toEqual("z");
     });
   });
-
 
   it("does not mutate its input", () => {
     DescribedClass.allocate(ast);
