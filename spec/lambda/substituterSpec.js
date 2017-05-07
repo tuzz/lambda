@@ -13,73 +13,79 @@ describe("Substituter", () => {
     )
   );
 
-  it("substitutes the param for the value on the right", () => {
-    let y = DescribedClass.substitute(ast("(λx. x) y"));
+  it("substitutes a variable for the replacement", () => {
+    let apply = DescribedClass.substitute(ast("0 0"), 0, ast("x"));
 
-    expect(y.type).toEqual("variable");
+    let x1 = apply.children[0];
+    let x2 = apply.children[1];
+
+    expect(x1.value).toEqual("x");
+    expect(x2.value).toEqual("x");
+  });
+
+  it("increments the substitution index when entering abstractions", () => {
+    let lambda = DescribedClass.substitute(ast("λ. 1 2"), 0, ast("x"));
+    let apply = lambda.children[1];
+    let x = apply.children[0];
+    let two = apply.children[1];
+
+    expect(x.value).toEqual("x");
+    expect(two.value).toEqual("2");
+  });
+
+  it("can substitute the variable at a different index", () => {
+    let lambda = DescribedClass.substitute(ast("λ. 1 2"), 1, ast("x"));
+    let apply = lambda.children[1];
+    let one = apply.children[0];
+    let x = apply.children[1];
+
+    expect(one.value).toEqual("1");
+    expect(x.value).toEqual("x");
+  });
+
+  it("shifts the replacement index for each abstraction entered", () => {
+    let x = DescribedClass.substitute(ast("0"), 0, ast("x"));
+    expect(x.value).toEqual("x");
+    expect(x.index).toEqual(0);
+
+    let lambda = DescribedClass.substitute(ast("λ. 1"), 0, ast("x"));
+    x = lambda.children[1];
+    expect(x.value).toEqual("x");
+    expect(x.index).toEqual(1);
+  });
+
+  it("does not shift bound variables in the replacement", () => {
+    let outer = DescribedClass.substitute(ast("λ. 1"), 0, ast("λx. x y"));
+    let inner = outer.children[1];
+    let apply = inner.children[1];
+    let x = apply.children[0];
+    let y = apply.children[1];
+
+    expect(x.value).toEqual("x");
     expect(y.value).toEqual("y");
+
+    expect(x.index).toEqual(0);
+    expect(y.index).toEqual(2);
   });
 
-  it("substitutes inside nested terms", () => {
-    let apply1 = DescribedClass.substitute(ast("(λx. x x λz. x) y"));
-    let apply2 = apply1.children[0];
-    let lambdaZ = apply1.children[1];
-
-    let y1 = apply2.children[0];
-    let y2 = apply2.children[1];
-    let y3 = lambdaZ.children[1];
-
-    expect(y1.value).toEqual("y");
-    expect(y2.value).toEqual("y");
-    expect(y3.value).toEqual("y");
-  });
-
-  it("substitutes for nested terms", () => {
-    let lambdaY = DescribedClass.substitute(ast("(λx. x) λy. y y"));
-    let apply = lambdaY.children[1];
-
+  it("clones the replacement for each substitution", () => {
+    let apply = DescribedClass.substitute(ast("y y"), 0, ast("x"));
     let y1 = apply.children[0];
     let y2 = apply.children[1];
 
-    expect(y1.value).toEqual("y");
-    expect(y2.value).toEqual("y");
+    y1.mutated = true;
+
+    expect(y2.mutated).toBeUndefined();
+    expect(y1).not.toEqual(y2);
   });
 
-  it("copies the naming context onto the new node", () => {
-    let y = DescribedClass.substitute(ast("(λx. x) y"));
-    let binder = y.namingContext[0];
+  it("does not mutate its input", () => {
+    let input = ast("λ. 1");
+    let replacement = ast("x");
 
-    expect(y.binder).toEqual(binder);
+    DescribedClass.substitute(input, 0, replacement);
+
+    expect(input.children[1].value).toEqual("1");
+    expect(replacement.index).toEqual(0);
   });
-
-  it("is capture avoiding (1)", () => {
-    let lambdaX = DescribedClass.substitute(ast("(λx. λx. x) y"));
-    let x = lambdaX.children[1];
-
-    expect(x.binder).toEqual(lambdaX);
-  });
-
-  it("is capture avoiding (2)", () => {
-    let lambdaY = DescribedClass.substitute(ast("(λx. λy. x) y"));
-    let y = lambdaY.children[1];
-    let freeVar = lambdaY.namingContext[0];
-
-    expect(y.binder).not.toEqual(lambdaY);
-    expect(y.binder).toEqual(freeVar);
-  });
-
-  // We shouldn't clone nodes within trees because variables under that node
-  // might be bound to an abstraction above the node. Instead, we should clone
-  // the entire tree at a higher level.
-  it("mutates its input", () => {
-    let input = ast("(λx. x) y");
-    let y = input.children[1];
-
-    let output = DescribedClass.substitute(input);
-
-    output.foo = "bar";
-    expect(y.foo).toEqual("bar");
-  });
-
-  it("handle free variables that have vanished, e.g. the case above");
 });
