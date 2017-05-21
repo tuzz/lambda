@@ -29,18 +29,18 @@ describe("Printer", () => {
   });
 
   it("prints function types", () => {
-    result = DescribedClass.print(ast("λx:T1->T2. x"));
-    expect(result).toEqual("λx:T1->T2. x");
+    result = DescribedClass.print(ast("λx:T1→T2. x"));
+    expect(result).toEqual("λx:T1→T2. x");
   });
 
   it("prints nested function types", () => {
-    result = DescribedClass.print(ast("λx:T1->T2->T3. x"));
-    expect(result).toEqual("λx:T1->T2->T3. x");
+    result = DescribedClass.print(ast("λx:T1→T2→T3. x"));
+    expect(result).toEqual("λx:T1→T2→T3. x");
   });
 
   it("prints incomplete function types", () => {
-    result = DescribedClass.print(ast("λx:T1->->. x"));
-    expect(result).toEqual("λx:T1->->. x");
+    result = DescribedClass.print(ast("λx:T1→→. x"));
+    expect(result).toEqual("λx:T1→→. x");
   });
 
   it("prints nested abstractions", () => {
@@ -89,17 +89,17 @@ describe("Printer", () => {
   });
 
   it("prints parentheses around left-associated types", () => {
-    result = DescribedClass.print(ast("λx:(T1->T2)->T3. x"));
-    expect(result).toEqual("λx:(T1->T2)->T3. x");
+    result = DescribedClass.print(ast("λx:(T1→T2)→T3. x"));
+    expect(result).toEqual("λx:(T1→T2)→T3. x");
 
-    result = DescribedClass.print(ast("λx:((T1->T2)->T3)->T4. x"));
-    expect(result).toEqual("λx:((T1->T2)->T3)->T4. x");
+    result = DescribedClass.print(ast("λx:((T1→T2)→T3)→T4. x"));
+    expect(result).toEqual("λx:((T1→T2)→T3)→T4. x");
 
-    result = DescribedClass.print(ast("λx:T1->((T2->T3)->T4). x"));
-    expect(result).toEqual("λx:T1->(T2->T3)->T4. x");
+    result = DescribedClass.print(ast("λx:T1→((T2→T3)→T4). x"));
+    expect(result).toEqual("λx:T1→(T2→T3)→T4. x");
 
-    result = DescribedClass.print(ast("λx:T1->((->T2)->T3). x"));
-    expect(result).toEqual("λx:T1->(->T2)->T3. x");
+    result = DescribedClass.print(ast("λx:T1→((→T2)→T3). x"));
+    expect(result).toEqual("λx:T1→(→T2)→T3. x");
   });
 
   it("prints variables", () => {

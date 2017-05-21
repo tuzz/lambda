@@ -8,7 +8,7 @@ graph[style="dotted"];
 node_0[label="0",shape="square",color="#FFC8F2",style="filled"];
 }
 subgraph cluster_tree {
-graph[label="&lambda;:T1->T2. 0 1"];
+graph[label="&lambda;:T1&rarr;T2. 0 1"];
 graph[style="dotted"];
 node_1[label="&lambda;",shape="box",color="#CAFEB8",style="filled"];
 node_2[label="&rarr;",shape="pentagon",color="#FF9C94",style="filled"];

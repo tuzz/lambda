@@ -21,14 +21,21 @@ describe("Lexer", () => {
   });
 
   it("lexes keywords", () => {
-    tokens = DescribedClass.lex("λ.():->");
+    tokens = DescribedClass.lex("λ.():→");
     expect(tokens.length).toEqual(6);
     expectToken(0, "keyword", "λ", 1, 1);
     expectToken(1, "keyword", ".", 1, 2);
     expectToken(2, "keyword", "(", 1, 3);
     expectToken(3, "keyword", ")", 1, 4);
     expectToken(4, "keyword", ":", 1, 5);
-    expectToken(5, "keyword", "->", 1, 6);
+    expectToken(5, "keyword", "→", 1, 6);
+  });
+
+  it("allows different arrow representations", () => {
+    tokens = DescribedClass.lex("->→");
+    expect(tokens.length).toEqual(2);
+    expectToken(0, "keyword", "→", 1, 1);
+    expectToken(1, "keyword", "→", 1, 3);
   });
 
   it("ignores whitespace", () => {
