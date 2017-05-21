@@ -15,6 +15,7 @@ describe("Parser", () => {
   const LEFT  = token("keyword", "(");
   const RIGHT = token("keyword", ")");
   const COLON = token("keyword", ":");
+  const ARROW = token("keyword", "->");
   const x     = token("identifier", "x");
   const y     = token("identifier", "y");
   const z     = token("identifier", "z");
@@ -83,6 +84,60 @@ describe("Parser", () => {
 
     let nestedBody = body.children[1];
     expectNode(nestedBody, 0, "variable", "0");
+  });
+
+  it("parses function types", () => {
+    root = DescribedClass.parse([λ, COLON, x, ARROW, y, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 2, "function-type", undefined);
+
+    let left = type.children[0];
+    expectNode(left, 0, "type", "x");
+
+    let right = type.children[1];
+    expectNode(right, 0, "type", "y");
+  });
+
+  it("parses nested function types", () => {
+    root = DescribedClass.parse([λ, COLON, x, ARROW, y, ARROW, z, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 2, "function-type", undefined);
+
+    let left = type.children[0];
+    expectNode(left, 0, "type", "x");
+
+    let right = type.children[1];
+    expectNode(right, 2, "function-type", undefined);
+
+    let rightLeft = right.children[0];
+    expectNode(rightLeft, 0, "type", "y");
+
+    let rightRight = right.children[1];
+    expectNode(rightRight, 0, "type", "z");
+  });
+
+  it("parses incomplete function types", () => {
+    root = DescribedClass.parse([λ, COLON, ARROW, x, ARROW, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 2, "function-type", undefined);
+
+    let left = type.children[0];
+    expectNode(left, 0, "type", undefined);
+
+    let right = type.children[1];
+    expectNode(right, 2, "function-type", undefined);
+
+    let rightLeft = right.children[0];
+    expectNode(rightLeft, 0, "type", "x");
+
+    let rightRight = right.children[1];
+    expectNode(rightRight, 0, "type", undefined);
   });
 
   it("parses applications", () => {
