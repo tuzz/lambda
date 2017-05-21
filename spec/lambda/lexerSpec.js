@@ -65,6 +65,22 @@ describe("Lexer", () => {
     expectToken(0, "identifier", "x", 2, 2);
   });
 
+  it("lexes a complex input correctly", () => {
+    tokens = DescribedClass.lex("λx. λy:T1->T2. x");
+    expect(tokens.length).toEqual(11);
+    expectToken(0, "keyword", "λ", 1, 1);
+    expectToken(1, "identifier", "x", 1, 2);
+    expectToken(2, "keyword", ".", 1, 3);
+    expectToken(3, "keyword", "λ", 1, 5);
+    expectToken(4, "identifier", "y", 1, 6);
+    expectToken(5, "keyword", ":", 1, 7);
+    expectToken(6, "identifier", "T1", 1, 8);
+    expectToken(7, "keyword", "→", 1, 10);
+    expectToken(8, "identifier", "T2", 1, 12);
+    expectToken(9, "keyword", ".", 1, 14);
+    expectToken(10, "identifier", "x", 1, 16);
+  });
+
   it("throws an error on an unexpected character", () => {
     expect(() => {
       DescribedClass.lex("λx.\n(x x)Γ x");
