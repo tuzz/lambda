@@ -69,6 +69,14 @@ describe("Parser", () => {
     expectNode(body, 0, "variable", "0");
   });
 
+  it("parses empty types", () => {
+    root = DescribedClass.parse([λ, COLON, DOT, zero]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 0, "type", undefined);
+  });
+
   it("parses nested abstractions", () => {
     root = DescribedClass.parse([λ, DOT, λ, DOT, zero]);
     expectNode(root, 2, "abstraction", undefined);
@@ -138,6 +146,52 @@ describe("Parser", () => {
 
     let rightRight = right.children[1];
     expectNode(rightRight, 0, "type", undefined);
+  });
+
+  // λ:(x->y)->z. 0
+  it("parses function types with parantheses", () => {
+    root = DescribedClass.parse([
+      λ, COLON, LEFT, x, ARROW, y, RIGHT, ARROW, z, DOT, zero
+    ]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 2, "function-type", undefined);
+
+    let left = type.children[0];
+    expectNode(left, 2, "function-type", undefined);
+
+    let right = type.children[1];
+    expectNode(right, 0, "type", "z");
+
+    let leftLeft = left.children[0];
+    expectNode(leftLeft, 0, "type", "x");
+
+    let leftRight = left.children[1];
+    expectNode(leftRight, 0, "type", "y");
+  });
+
+  // λ:((->x)->).0
+  it("parses incomplete function types with nested parenthesis", () => {
+    root = DescribedClass.parse([
+      λ, COLON, LEFT, LEFT, ARROW, x, RIGHT, ARROW, RIGHT, DOT, zero
+    ]);
+    expectNode(root, 2, "abstraction", undefined);
+
+    let type = root.children[0];
+    expectNode(type, 2, "function-type", undefined);
+
+    let left = type.children[0];
+    expectNode(left, 2, "function-type", undefined);
+
+    let right = type.children[1];
+    expectNode(right, 0, "type", undefined);
+
+    let leftLeft = left.children[0];
+    expectNode(leftLeft, 0, "type", undefined);
+
+    let leftRight = left.children[1];
+    expectNode(leftRight, 0, "type", "x");
   });
 
   it("parses applications", () => {
