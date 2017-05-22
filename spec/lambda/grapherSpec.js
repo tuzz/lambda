@@ -21,6 +21,7 @@ describe("Grapher", () => {
   const fixture1 = fixture("graph.dot");
   const fixture2 = fixture("binders.dot");
   const fixture3 = fixture("nameless.dot");
+  const fixture4 = fixture("contextless.dot");
 
   it("returns a dot graph for the tree", () => {
     result = DescribedClass.graph(ast("λx:T1->T2. x y"));
@@ -35,5 +36,13 @@ describe("Grapher", () => {
   it("can optionally build without names", () => {
     result = DescribedClass.graph(ast("λx:T1->T2. x y"), { names: false });
     expect(result).toEqual(fixture3);
+  });
+
+  it("can draw graphs without naming contexts", () => {
+    let term = ast("λx:T1->T2. x y");
+    term.namingContext = undefined;
+
+    result = DescribedClass.graph(term, { binders: true });
+    expect(result).toEqual(fixture4);
   });
 });

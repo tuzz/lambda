@@ -120,4 +120,20 @@ describe("Printer", () => {
     result = DescribedClass.print(ast("(λ. 0) λ:T. 1 0 2"));
     expect(result).toEqual("(λx. x) λx:T. 1 x 2");
   });
+
+  it("prints terms that don't have a naming context", () => {
+    let term = ast("λx:T1. x");
+    term.namingContext = undefined;
+
+    result = DescribedClass.print(term);
+    expect(result).toEqual("λx:T1. x");
+  });
+
+  it("prints free variable names as question marks", () => {
+    let term = ast("(λx:T1. x) y");
+    term.namingContext = undefined;
+
+    result = DescribedClass.print(term);
+    expect(result).toEqual("(λx:T1. x) ?");
+  });
 });
